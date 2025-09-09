@@ -1,3 +1,11 @@
+# ProScore - Football Shop Web Application
+
+## Deployment
+Aplikasi sudah di-deploy dan dapat diakses melalui tautan berikut:  
+👉 [Link ke ProScore](https://made-shandy-footballshop.pbp.cs.ui.ac.id/)
+
+---
+
 ## Implementasi Checklist (Step by Step)
 1. **Setup Project**  
    - Membuat virtual environment dan menginstall Django.  
