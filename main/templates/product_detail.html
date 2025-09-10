@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<p>
+    <a href="{% url 'main:show_main' %}">
+        <button>← Back to Products List</button>
+    </a>
+</p>
+
+<h2>{{ product.full_name }}</h2>
+
+{% if product.thumbnail %}
+    <img src="{{ product.thumbnail }}" alt="thumbnail" width="200" height="150">
+    <br />
+{% endif %}
+
+<p>
+    {% if product.is_featured %}
+        <b style="color:red;">BEST SELLER!!!</b> |
+    {% endif %}
+    <b>{{ product.formatted_price }}</b>
+    {% if product.discount > 0 %}
+        <span style="text-decoration: line-through; color: gray;">
+        Rp {{ product.price|floatformat:0 }}
+        </span>
+        ({{ product.discount }}% OFF)
+    {% endif %}
+    | Rating: {{ product.rating }} ⭐
+    | Category: {{ product.get_category_display }}
+</p>
+
+<h4>Description</h4>
+<p>{{ product.description }}</p>
+
+<h4>Available Sizes & Stock</h4>
+<ul>
+    {% for ps in product.productsize_set.all %}
+    <li>
+        Size {{ ps.size }} — 
+        {% if ps.stock > 0 %}
+            Stock: {{ ps.stock }}
+        {% else %}
+            <span style="color: red;">Out of Stock</span>
+        {% endif %}
+    </li>
+{% empty %}
+    <li>No sizes available for this product.</li>
+{% endfor %}
+
+</ul>
+
+{% endblock content %}

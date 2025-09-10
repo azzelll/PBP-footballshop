@@ -1,6 +1,3 @@
-from django.db import models
-
-# Create your models here.
 import uuid
 from django.db import models
 
@@ -16,6 +13,7 @@ class Product(models.Model):
         ('lifestyle', 'Lifestyle / Merchandise'),
     ]
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     brand = models.CharField(max_length=50)
     description = models.TextField()
@@ -48,5 +46,19 @@ class Product(models.Model):
         return ", ".join([size.name for size in self.sizes.all()])
 
     def formatted_price(self):
-        return f"Rp {self.price:,.0f}".replace(",", ".")
-    
+        return f"Rp {self.final_price:,.0f}".replace(",", ".")
+
+class ProductSize(models.Model):
+    SIZE_CHOICES = [
+        ("S", "Small"),
+        ("M", "Medium"),
+        ("L", "Large"),
+        ("XL", "Extra Large"),
+        ("XXL", "Double Extra Large"),
+    ]
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    size = models.CharField(max_length=5, choices=SIZE_CHOICES)
+    stock = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.size}"
