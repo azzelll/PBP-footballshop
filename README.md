@@ -1,79 +1,64 @@
-# ProScore - Football Shop Web Application
+# Tugas Tutorial 2 PBP
 
-## Deployment
-Aplikasi sudah di-deploy dan dapat diakses melalui tautan berikut:  
-👉 [Link ke ProScore](https://made-shandy-footballshop.pbp.cs.ui.ac.id/)
+## Mengapa Kita Memerlukan Data Delivery dalam Platform
+Data delivery penting karena:
+- Memungkinkan **pertukaran data** antara client dan server.
+- Memberikan **respon real-time** terhadap request pengguna.
+- Memastikan **integritas dan keamanan data** saat berpindah dari backend ke frontend.
+- Tanpa mekanisme delivery yang jelas, data bisa terlambat, salah format, atau rawan disalahgunakan.
 
----
+## XML vs JSON
+- **XML** adalah format berbasis tag yang verbose, mendukung atribut dan skema yang kompleks.  
+- **JSON** adalah format berbasis key-value yang ringan dan mudah dibaca.  
 
-## Implementasi Checklist (Step by Step)
+**Mengapa JSON lebih populer:**
+- Sintaks lebih sederhana dan lebih mudah dipahami.
+- Ukuran data lebih kecil (ringan untuk jaringan).
+- Native support di JavaScript dan hampir semua bahasa modern.
+- Lebih mudah diparse langsung menjadi object.
+
+## Fungsi `is_valid()` pada Form Django
+- Method ini melakukan **validasi otomatis** pada data yang dikirim lewat form berdasarkan field dan rules di `forms.py`.
+- Mengembalikan `True` bila data sesuai aturan, `False` bila ada error.
+- Setelah dipanggil, kita bisa akses `form.cleaned_data` untuk mengambil data yang sudah bersih.
+- Tanpa `is_valid()`, kita harus memvalidasi manual setiap field, rawan bug dan tidak konsisten.
+
+## Mengapa Kita Membutuhkan `csrf_token` di Form Django
+- `csrf_token` adalah token unik yang ditambahkan Django di setiap form untuk mencegah **CSRF (Cross Site Request Forgery)**.
+- Jika kita tidak menambahkannya, penyerang bisa membuat halaman berbahaya yang mengirim request ke server kita **atas nama user** yang sedang login.
+- Dengan `csrf_token`, setiap form harus membawa token yang cocok dengan session user; tanpa token ini request akan ditolak.
+
+## Implementasi Checklist Step by Step
 1. **Setup Project**  
-   - Membuat virtual environment dan menginstall Django.  
-   - Membuat project Django (`django-admin startproject`).  
-   - Membuat aplikasi utama `main`.  
+   - Membuat virtual environment dan menginstal Django.  
+   - Membuat project Django (`django-admin startproject`) dan app utama (`python manage.py startapp main`).  
 
-2. **Membuat Model**  
-   - Membuat model `Product` dengan atribut `name`, `brand`,   `description`, `thumbnail`, `discount`, `price`, `stock`, `category`, dan relasi ke `Size`.  
-   - Menentukan `CATEGORY_CHOICES` agar data produk lebih terstruktur.  
+2. **Membuat Model & Form**  
+   - Membuat model `Product`, `Size`, dan `ProductSize`.  
+   - Menentukan `CATEGORY_CHOICES` agar data lebih terstruktur.  
+   - Membuat `forms.py` berisi `ProductForm` dan `ProductSizeFormSet` untuk input data.  
 
 3. **Membuat Views dan Routing**  
-   - Menambahkan function/class di `views.py` untuk menampilkan daftar produk.  
-   - Mengatur `urls.py` agar request client diarahkan ke views yang sesuai.  
+   - Menambahkan function `create_product`, `show_main`, dan `show_product` di `views.py`.  
+   - Mengatur `urls.py` untuk mengarahkan path ke views yang sesuai.  
 
 4. **Membuat Template HTML**  
-   - Membuat folder `templates/` untuk file `.html`.  
-   - Menghubungkan data dari views ke HTML dengan Django template engine (`{{ ... }}`).  
+   - Membuat folder `templates/` berisi `create_product.html` dan `product_detail.html`.  
+   - Menggunakan Django template engine (`{{ ... }}`) untuk menampilkan data dari views.  
 
 5. **Migrasi Database**  
-   - Menjalankan `python manage.py makemigrations` dan `python manage.py migrate` untuk membuat serta menerapkan struktur tabel database.  
+   - Menjalankan `python manage.py makemigrations` dan `python manage.py migrate` untuk menerapkan model ke database.  
 
 6. **Testing dan Deployment**  
-   - Menjalankan server lokal (`python manage.py runserver`).  
-   - Men-deploy aplikasi ke platform hosting (misalnya PWS di mata kuliah PBP ini).  
+   - Menjalankan server lokal dengan `python manage.py runserver`.  
+   - Men-deploy aplikasi ke platform hosting (misalnya PWS).  
 
----
+## Feedback untuk Asdos Tutorial 2
+Asdos sudah cukup jelas dalam menjelaskan materi dan membantu ketika ada kendala.  
 
-##  Alur Request-Response (Bagan)
-![Bagan MVT](download.png)
-Source : https://python.plainenglish.io/mastering-django-mvt-a-complete-guide-for-beginners-and-advanced-developers-8c609e7b5da7?gi=1af76189b72c
+##  Bukti Screen Shoot Postman
+![Postman XML](xml.jpg)
+![Postman JSON](json.jpg)
 
-### Penjelasan:
-- **urls.py**: menentukan path URL mana yang akan diarahkan ke fungsi/kelas tertentu di views.  
-- **views.py**: mengatur logika pemrosesan request (misalnya ambil data produk dari database).  
-- **models.py**: mendefinisikan struktur data & ORM untuk akses database.  
-- **HTML (templates)**: menampilkan data ke user dalam bentuk halaman web.  
-
----
-
-## Peran `settings.py`
-File `settings.py` berfungsi sebagai pusat konfigurasi proyek Django, meliputi:
-- Database (ENGINE, NAME, USER, PASSWORD, HOST, PORT).  
-- Installed apps (`INSTALLED_APPS`).  
-- Middleware.  
-- Static files & template directories.  
-- Secret key & debug mode.  
-- Konfigurasi deployment (allowed hosts, dll).  
-
----
-
-## Cara Kerja Migrasi Database di Django
-1. `python manage.py makemigrations`  
-   Membuat file migrasi berdasarkan perubahan pada `models.py`.  
-
-2. `python manage.py migrate`  
-   Menerapkan file migrasi tersebut ke database (membuat/mengubah tabel sesuai model).  
-
-Dengan cara ini, Django mempermudah sinkronisasi antara kode model dengan struktur database tanpa harus menulis SQL manual.  
-
----
-
-## Mengapa Django Cocok Sebagai Framework Awal?
-- **Batteries included**: sudah menyediakan banyak fitur bawaan (ORM, auth, admin panel).  
-- **Struktur jelas (MVC/MVT)**: memudahkan pemula memahami alur request–response.  
-- **Komunitas besar & dokumentasi lengkap**: memudahkan belajar.  
----
-
-## Feedback untuk Asisten Dosen
-Menurut saya, asisten dosen hingga saat ini sudah cukup bagus buat saya.  
-
-
+## Refrensi 
+Pada pembuatan model, saya menggunakan GPT untuk menentukan bentuk model terbaik supaya efisien untuk menentukan penempatan size.

@@ -48,7 +48,7 @@ class Product(models.Model):
     def formatted_price(self):
         return f"Rp {self.final_price:,.0f}".replace(",", ".")
 
-class ProductSize(models.Model):
+class ProductSize(models.Model): # Pada model ini saya dibantu gpt untuk memnentukan bentuk yang efisien
     SIZE_CHOICES = [
         ("S", "Small"),
         ("M", "Medium"),
