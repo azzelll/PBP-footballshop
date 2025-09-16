@@ -58,7 +58,13 @@ Asdos sudah cukup jelas dalam menjelaskan materi dan membantu ketika ada kendala
 
 ##  Bukti Screen Shoot Postman
 ![Postman XML](xml.jpg)
+Postman XML
+![Postman XML by ID](xml_id.png)
+Postman XML by ID
 ![Postman JSON](json.jpg)
+Postman JSON
+![Postman JSON by ID](json_id.png)
+Postman JSON by ID
 
 ## Refrensi 
 Pada pembuatan model, saya menggunakan GPT untuk menentukan bentuk model terbaik supaya efisien untuk menentukan penempatan size.
