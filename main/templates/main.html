@@ -15,6 +15,12 @@
     <button>Add Product</button>
 </a>
 
+<a href="{% url 'main:logout' %}">
+    <button>Logout</button>
+</a>
+
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+
 <hr>
 
 {% if not product_list %}
