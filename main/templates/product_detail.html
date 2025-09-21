@@ -45,7 +45,11 @@
 {% empty %}
     <li>No sizes available for this product.</li>
 {% endfor %}
-
 </ul>
+{% if product.user %}
+    <p>Author: {{ product.user.username }}</p>
+{% else %}
+    <p>Author: Anonymous</p>
+{% endif %}
 
 {% endblock content %}
