@@ -2,9 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
-class Size(models.Model):
-    name = models.CharField(max_length=10)
-    
+
 class Product(models.Model):
     CATEGORY_CHOICES = [
         ('shoes', 'Sepatu'),
@@ -22,7 +20,7 @@ class Product(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='update')
     
     stock = models.IntegerField(default=0)
-    sizes = models.ManyToManyField(Size, blank=True)
+    sizes = models.CharField(max_length=100, blank=True)
     
     discount = models.IntegerField(default=0)
     price = models.PositiveIntegerField(default=0)
@@ -49,17 +47,3 @@ class Product(models.Model):
     def formatted_price(self):
         return f"Rp {self.final_price:,.0f}".replace(",", ".")
 
-class ProductSize(models.Model): # Pada model ini saya dibantu gpt untuk memnentukan bentuk yang efisien
-    SIZE_CHOICES = [
-        ("S", "Small"),
-        ("M", "Medium"),
-        ("L", "Large"),
-        ("XL", "Extra Large"),
-        ("XXL", "Double Extra Large"),
-    ]
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    size = models.CharField(max_length=5, choices=SIZE_CHOICES)
-    stock = models.PositiveIntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.product.name} - {self.size}"

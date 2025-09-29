@@ -11,6 +11,7 @@ class ProductForm(ModelForm):
             'thumbnail',
             'category',
             'price',
+            'size',
             'discount',
             'is_featured',
         ]

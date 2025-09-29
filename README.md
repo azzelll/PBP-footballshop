@@ -232,3 +232,76 @@ Asdos sudah cukup jelas membimbing dan responsif saat ada kendala. Secara keselu
 
 
 ---
+
+
+## Tugas 5
+
+### Urutan Prioritas CSS Selector
+Jika beberapa CSS selector mengenai elemen HTML yang sama, prioritasnya diatur oleh **specificity**:
+- Inline style (`style=""`) paling tinggi.
+- ID selector (`#id`) lebih tinggi daripada class.
+- Class, pseudo-class, attribute selector (`.class`, `[attr]`) lebih tinggi daripada tag selector.
+- Tag/element selector (`div`, `p`) paling rendah.
+- Jika specificitiy sama, aturan yang muncul **terakhir** di file CSS yang digunakan.
+
+### Pentingnya Responsive Design
+Responsive design penting agar tampilan web menyesuaikan ukuran layar (mobile, tablet, desktop).
+- Contoh aplikasi **yang sudah menerapkan**: Instagram Web (layout menyesuaikan layar).
+- Contoh aplikasi **yang belum menerapkan**: website lama fixed width, pecah di layar HP.
+
+Dengan responsive design user experience meningkat, akses lebih luas, dan website terasa modern.
+
+### Perbedaan Margin, Border, Padding
+- **Margin**: ruang di luar border elemen, memisahkan antar elemen.
+- **Border**: garis tepi elemen.
+- **Padding**: ruang di dalam elemen antara content dan border.
+
+Implementasi:
+```css
+.my-box {
+  margin: 10px;  /* jarak luar */
+  border: 2px solid black; /* garis tepi */
+  padding: 15px; /* ruang dalam */
+}
+```
+
+### Flexbox vs Grid Layout
+
+- **Flexbox**: mengatur layout dalam satu dimensi (row atau column). Cocok untuk navbar, card list, atau mengatur item yang sejajar.
+
+- **Grid**: mengatur layout dalam dua dimensi (row + column). Cocok untuk dashboard, galeri, atau tata letak kompleks.
+
+```css
+Contoh Flexbox:
+.container {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+```
+```css
+Contoh Grid:
+.container {
+   display: grid;
+   grid-template-columns: repeat(3, 1fr);
+   gap: 10px;
+}
+```
+
+
+
+### Implementasi Checklist Step-by-Step
+1. **Tambahkan CSS Framework**  
+   Menggunakan TailwindCSS atau Bootstrap untuk styling halaman agar cepat dan konsisten.
+
+2. **Gunakan Flexbox di Bagian yang Sederhana**  
+   - Navbar: elemen menu disejajarkan secara horizontal dengan `flex`.
+   - Tombol pada card: menggunakan `flex` untuk mengatur tombol edit dan hapus sejajar.
+
+3. **Gunakan Grid di Layout Lebih Kompleks**  
+   - Halaman daftar product: susun card product dalam grid (`grid grid-cols-3` di Tailwind misalnya).
+   - Halaman utama: header, konten, dan sidebar dengan grid untuk membagi area.
+
+4. **Testing Responsif**  
+   - Periksa di ukuran layar mobile dan desktop.
+   - Sesuaikan class Tailwind/Bootstrap (`md:`, `lg:`, dsb.) agar layout tetap rapi.

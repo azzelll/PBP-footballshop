@@ -32,20 +32,7 @@
 <p>{{ product.description }}</p>
 
 <h4>Available Sizes & Stock</h4>
-<ul>
-    {% for ps in product.productsize_set.all %}
-    <li>
-        Size {{ ps.size }} — 
-        {% if ps.stock > 0 %}
-            Stock: {{ ps.stock }}
-        {% else %}
-            <span style="color: red;">Out of Stock</span>
-        {% endif %}
-    </li>
-{% empty %}
-    <li>No sizes available for this product.</li>
-{% endfor %}
-</ul>
+
 {% if product.user %}
     <p>Author: {{ product.user.username }}</p>
 {% else %}
