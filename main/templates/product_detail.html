@@ -1,55 +1,209 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>{{ product.name }} - KickOff</title>
+{% endblock meta %}
+
 {% block content %}
-<p>
-    <a href="{% url 'main:show_main' %}">
-        <button>← Back to Products List</button>
-    </a>
-</p>
+{% include 'navbar.html' %}
 
-<h2>{{ product.full_name }}</h2>
+<div class="bg-gray-50 w-full pt-16 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Back Button -->
+        <div class="mb-6">
+            <a href="{% url 'main:show_main' %}" class="inline-flex items-center text-green-600 hover:text-green-700 font-medium transition-colors">
+                ← Back to Products
+            </a>
+        </div>
 
-{% if product.thumbnail %}
-    <img src="{{ product.thumbnail }}" alt="thumbnail" width="200" height="150">
-    <br />
-{% endif %}
+        <!-- Product Detail Card -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 sm:p-8">
+                
+                <!-- Left Column: Image -->
+                <div>
+                    <div class="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-4">
+                        {% if product.thumbnail %}
+                            <img src="{{ product.thumbnail }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-gray-300 text-9xl">
+                                ⚽
+                            </div>
+                        {% endif %}
+                    </div>
 
-<p>
-    {% if product.is_featured %}
-        <b style="color:red;">BEST SELLER!!!</b> |
-    {% endif %}
-    <b>{{ product.formatted_price }}</b>
-    {% if product.discount > 0 %}
-        <span style="text-decoration: line-through; color: gray;">
-        Rp {{ product.price|floatformat:0 }}
-        </span>
-        ({{ product.discount }}% OFF)
-    {% endif %}
-    | Rating: {{ product.rating }} ⭐
-    | Category: {{ product.get_category_display }}
-</p>
+                    <!-- Badges Row -->
+                    <div class="flex gap-2 flex-wrap">
+                        {% if product.is_featured %}
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-bold bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            ⭐ FEATURED
+                        </span>
+                        {% endif %}
+                        
+                        {% if product.discount > 0 %}
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-bold bg-red-100 text-red-800 border border-red-200">
+                            🔥 {{ product.discount }}% OFF
+                        </span>
+                        {% endif %}
 
-<h4>Description</h4>
-<p>{{ product.description }}</p>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200">
+                            {{ product.get_category_display }}
+                        </span>
+                    </div>
+                </div>
 
-<h4>Available Sizes & Stock</h4>
-<ul>
-    {% for ps in product.productsize_set.all %}
-    <li>
-        Size {{ ps.size }} — 
-        {% if ps.stock > 0 %}
-            Stock: {{ ps.stock }}
-        {% else %}
-            <span style="color: red;">Out of Stock</span>
-        {% endif %}
-    </li>
-{% empty %}
-    <li>No sizes available for this product.</li>
-{% endfor %}
-</ul>
-{% if product.user %}
-    <p>Author: {{ product.user.username }}</p>
-{% else %}
-    <p>Author: Anonymous</p>
-{% endif %}
+                <!-- Right Column: Info -->
+                <div>
+                    <!-- Brand -->
+                    <div class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">
+                        {{ product.brand }}
+                    </div>
 
+                    <!-- Product Name -->
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                        {{ product.name }}
+                    </h1>
+
+                    <!-- Rating -->
+                    {% if product.rating > 0 %}
+                    <div class="flex items-center mb-6">
+                        <span class="text-yellow-400 text-xl mr-2">
+                            {% if product.rating >= 4.5 %}★★★★★
+                            {% elif product.rating >= 3.5 %}★★★★☆
+                            {% elif product.rating >= 2.5 %}★★★☆☆
+                            {% elif product.rating >= 1.5 %}★★☆☆☆
+                            {% else %}★☆☆☆☆
+                            {% endif %}
+                        </span>
+                        <span class="text-lg font-semibold text-gray-700">{{ product.rating }}</span>
+                        <span class="text-gray-500 ml-2">/5.0</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Price Section -->
+                    <div class="border-t border-b border-gray-200 py-6 mb-6">
+                        <div class="flex items-baseline gap-3 mb-2">
+                            <span class="text-4xl font-bold text-green-600">
+                                {{ product.formatted_price }}
+                            </span>
+                            {% if product.discount > 0 %}
+                            <span class="text-xl text-gray-400 line-through">
+                                Rp {{ product.price|floatformat:0 }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% if product.discount > 0 %}
+                        <p class="text-sm text-green-600 font-medium">
+                            You save Rp {{ product.price|add:"-"|add:product.final_price|floatformat:0 }} ({{ product.discount }}%)
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Stock Status -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Availability</h3>
+                        {% if product.is_in_stock %}
+                        <div class="flex items-center text-green-600 font-medium">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            In Stock ({{ product.stock }} units available)
+                        </div>
+                        {% else %}
+                        <div class="flex items-center text-red-600 font-medium">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                            Out of Stock
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Available Sizes -->
+                    {% if product.sizes %}
+                    <div class="mb-6">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-3">Available Sizes</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for size in product.get_sizes_list %}
+                            <span class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-green-600 hover:text-green-600 transition-colors cursor-pointer">
+                                {{ size }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Description -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Product Description</h3>
+                        <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ product.description }}</p>
+                    </div>
+
+                    <!-- Seller Info -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Seller Information</h3>
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                                {{ product.user.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">{{ product.user.username }}</p>
+                                <p class="text-sm text-gray-500">Verified Seller</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        {% if user.is_authenticated and product.user == user %}
+                        <div class="flex gap-3">
+                            <a href="{% url 'main:edit_product' product.id %}" 
+                               class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg text-center transition-colors">
+                                ✏️ Edit Product
+                            </a>
+                            <a href="{% url 'main:delete_product' product.id %}" 
+                               onclick="return confirm('Are you sure you want to delete this product?')"
+                               class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg text-center transition-colors">
+                                🗑️ Delete Product
+                            </a>
+                        </div>
+                        {% else %}
+                        <button 
+                            disabled
+                            class="w-full bg-gray-300 text-gray-500 font-medium py-4 px-6 rounded-lg cursor-not-allowed">
+                            Add to Cart (Coming Soon)
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Info Section -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Free Shipping -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
+                <div class="text-4xl mb-3">🚚</div>
+                <h4 class="font-semibold text-gray-900 mb-1">Free Shipping</h4>
+                <p class="text-sm text-gray-600">For orders over Rp 500.000</p>
+            </div>
+
+            <!-- Secure Payment -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
+                <div class="text-4xl mb-3">🔒</div>
+                <h4 class="font-semibold text-gray-900 mb-1">Secure Payment</h4>
+                <p class="text-sm text-gray-600">100% secure transactions</p>
+            </div>
+
+            <!-- Return Policy -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
+                <div class="text-4xl mb-3">↩️</div>
+                <h4 class="font-semibold text-gray-900 mb-1">Easy Returns</h4>
+                <p class="text-sm text-gray-600">30-day return policy</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
