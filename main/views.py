@@ -5,43 +5,35 @@ from django.core import serializers
 from django.urls import reverse
 from main.forms import ProductForm
 from main.models import Product
-from django.forms import inlineformset_factory
-from .models import Product, ProductSize
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm 
 from django.contrib.auth.decorators import login_required
 
-ProductSizeFormSet = inlineformset_factory(
-    Product,
-    ProductSize,
-    fields=("size", "stock"),
-    extra=1, 
-    can_delete=True
-)
-
-def add_product(request):
-    if request.method == "POST":
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            product = form.save()
-            return redirect("main:show_main")
-    else:
-        form = ProductForm()
-
-    return render(request, "add_product.html", {"form": product})
-
 @login_required(login_url='/login')
 def show_main(request):
-    filter_type = request.GET.get("filter", "all")  
-
+    filter_value = request.GET.get("filter", "all")
+    category = request.GET.get("category", None)
+    if filter_value == "my":
+        filter_type = "my"
+    else:
+        filter_type = "all"
+        
+    # Start with all products or user's products
     if filter_type == "all":
         product_list = Product.objects.all()
     else:
         product_list = Product.objects.filter(user=request.user)
 
+    # Apply category filter if specified
+    if category:
+        product_list = product_list.filter(category=category)
+
+    # Order by: featured first, then by latest
+    product_list = product_list.order_by('-is_featured', '-id')
+
     context = {
-        'npm' : '2406495615',
+        'npm': '2406495615',
         'name': 'Made Shandy Krisnanda',
         'class': 'PBP C',
         'product_list': product_list,
@@ -52,39 +44,52 @@ def show_main(request):
 def create_product(request):
     if request.method == "POST":
         form = ProductForm(request.POST)
-        formset = ProductSizeFormSet(request.POST)
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             product_entry = form.save(commit=False)
             product_entry.user = request.user
             product_entry.save()
-            product_sizes = formset.save(commit=False)
-            for ps in product_sizes:
-                ps.product = product_entry
-                ps.save()
+            messages.success(request, f'Product "{product_entry.name}" has been created successfully!')
             return redirect("main:show_main")
+        else:
+            messages.error(request, 'Failed to create product. Please check the form.')
     else:
         form = ProductForm()
-        formset = ProductSizeFormSet()
     
-    context = {"form": form, "formset": formset}
+    context = {"form": form}
     return render(request, "create_product.html", context)
 
 def edit_product(request, id):
     product = get_object_or_404(Product, pk=id)
+    
+    # Check if user is the owner
+    if product.user != request.user:
+        messages.error(request, 'You are not allowed to edit this product.')
+        return redirect('main:show_main')
+    
     form = ProductForm(request.POST or None, instance=product)
     if form.is_valid() and request.method == 'POST':
         form.save()
+        messages.success(request, f'Product "{product.name}" has been updated successfully!')
         return redirect('main:show_main')
 
     context = {
-        'form': form
+        'form': form,
+        'product': product
     }
 
     return render(request, "edit_product.html", context)
 
 def delete_product(request, id):
     product = get_object_or_404(Product, pk=id)
+    
+    # Check if user is the owner
+    if product.user != request.user:
+        messages.error(request, 'You are not allowed to delete this product.')
+        return redirect('main:show_main')
+    
+    product_name = product.name
     product.delete()
+    messages.success(request, f'Product "{product_name}" has been deleted successfully!')
     return HttpResponseRedirect(reverse('main:show_main'))
 
 @login_required(login_url='/login') 
@@ -132,7 +137,7 @@ def register(request):
             form.save()
             messages.success(request, 'Your account has been successfully created!')
             return redirect('main:login')
-    context = {'form':form}
+    context = {'form': form}
     return render(request, 'register.html', context)
 
 def login_user(request):
@@ -144,8 +149,10 @@ def login_user(request):
             login(request, user)
             response = HttpResponseRedirect(reverse("main:show_main"))
             response.set_cookie('last_login', str(datetime.datetime.now()))
+            messages.success(request, f'Welcome back, {user.username}!')
             return response
-
+        else:
+            messages.error(request, 'Invalid username or password.')
     else:
         form = AuthenticationForm(request)
     context = {'form': form}
@@ -155,4 +162,5 @@ def logout_user(request):
     logout(request)
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
+    messages.success(request, 'You have been logged out successfully.')
     return response

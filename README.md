@@ -305,3 +305,5 @@ Contoh Grid:
 4. **Testing Responsif**  
    - Periksa di ukuran layar mobile dan desktop.
    - Sesuaikan class Tailwind/Bootstrap (`md:`, `lg:`, dsb.) agar layout tetap rapi.
+
+NOTES : Pada pengerjaan Tugas 5 saya dibantu oleh AI untuk design dan memahami syntax dari css dan html
