@@ -28,44 +28,11 @@
 
             <!-- Card Body -->
             <div class="p-8">
-                <!-- Error Messages -->
-                {% if form.non_field_errors %}
-                <div class="mb-6 bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4">
-                    {% for error in form.non_field_errors %}
-                    <div class="flex items-start">
-                        <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                        </svg>
-                        <span class="text-red-800 text-sm">{{ error }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                {% if form.errors %}
-                <div class="mb-6 space-y-2">
-                    {% for field, errors in form.errors.items %}
-                    {% if field != '__all__' %}
-                    {% for error in errors %}
-                    <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4">
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <span class="font-medium text-red-800 text-sm">{{ field|title }}:</span>
-                                <span class="text-red-700 text-sm"> {{ error }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% endif %}
-                    {% endfor %}
-                </div>
-                {% endif %}
+                <!-- Error Container -->
+                <div id="registerErrors" class="hidden mb-6 space-y-2"></div>
 
                 <!-- Register Form -->
-                <form method="POST" action="" class="space-y-6">
+                <form id="registerForm" class="space-y-6">
                     {% csrf_token %}
                     
                     <!-- Username Field -->
@@ -136,46 +103,11 @@
                     <!-- Submit Button -->
                     <button 
                         type="submit" 
+                        id="registerButton"
                         class="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                         Create Account
                     </button>
                 </form>
-
-                <!-- Success Messages -->
-                {% if messages %}
-                <div class="mt-6 space-y-2">
-                    {% for message in messages %}
-                    <div class="{% if message.tags == 'success' %}bg-green-50 border-green-500{% elif message.tags == 'error' %}bg-red-50 border-red-500{% else %}bg-blue-50 border-blue-500{% endif %} border-l-4 rounded-r-lg p-4">
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 {% if message.tags == 'success' %}text-green-500{% elif message.tags == 'error' %}text-red-500{% else %}text-blue-500{% endif %} mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="{% if message.tags == 'success' %}text-green-800{% elif message.tags == 'error' %}text-red-800{% else %}text-blue-800{% endif %} text-sm">{{ message }}</span>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                <!-- Messages Display -->
-                {% if messages %}
-                    <div class="mt-6">
-                    {% for message in messages %}
-                        <div 
-                        class="
-                            px-4 py-3 rounded text-sm border
-                            {% if message.tags == 'success' %}
-                            bg-green-50 border-green-200 text-green-700
-                            {% elif message.tags == 'error' %}
-                            bg-red-50 border-red-200 text-red-700
-                            {% else %}
-                            bg-gray-50 border-gray-200 text-gray-700
-                            {% endif %}
-                        ">
-                        {{ message }}
-                        </div>
-                    {% endfor %}
-                    </div>
-                {% endif %}
 
                 <!-- Password Requirements -->
                 <div class="mt-6 bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -236,4 +168,95 @@
         </div>
     </div>
 </div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const errorContainer = document.getElementById('registerErrors');
+    const button = document.getElementById('registerButton');
+    
+    // Hide previous errors
+    errorContainer.innerHTML = '';
+    errorContainer.classList.add('hidden');
+    
+    // Disable button
+    button.disabled = true;
+    button.textContent = 'Creating account...';
+    
+    const formData = new FormData(this);
+    const csrftoken = getCookie('csrftoken');
+    
+    try {
+        const response = await fetch('{% url "main:register_ajax" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+            },
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Store message in sessionStorage for toast
+            sessionStorage.setItem('registerMessage', data.message);
+            // Redirect to login page
+            window.location.href = '{% url "main:login" %}';
+        } else {
+            // Show errors
+            errorContainer.classList.remove('hidden');
+            
+            if (data.errors) {
+                for (const [field, errors] of Object.entries(data.errors)) {
+                    errors.forEach(error => {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4';
+                        errorDiv.innerHTML = `
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <span class="font-medium text-red-800 text-sm">${field}:</span>
+                                    <span class="text-red-700 text-sm"> ${error}</span>
+                                </div>
+                            </div>
+                        `;
+                        errorContainer.appendChild(errorDiv);
+                    });
+                }
+            }
+            
+            button.disabled = false;
+            button.textContent = 'Create Account';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        errorContainer.classList.remove('hidden');
+        errorContainer.innerHTML = `
+            <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4">
+                <span class="text-red-800 text-sm">An error occurred. Please try again.</span>
+            </div>
+        `;
+        button.disabled = false;
+        button.textContent = 'Create Account';
+    }
+});
+</script>
 {% endblock content %}

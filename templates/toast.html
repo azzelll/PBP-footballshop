@@ -1,0 +1,209 @@
+<!-- Toast Notification Component -->
+<div id="toast" class="fixed bottom-6 right-6 z-50 hidden">
+    <div id="toastContent" class="bg-white rounded-lg shadow-2xl border border-gray-200 p-4 max-w-sm transform transition-all duration-300 translate-y-0 opacity-100">
+        <div class="flex items-start">
+            <!-- Icon Container -->
+            <div id="toastIconContainer" class="flex-shrink-0 mr-3">
+                <!-- Success Icon -->
+                <div id="toastSuccessIcon" class="hidden w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                
+                <!-- Error Icon -->
+                <div id="toastErrorIcon" class="hidden w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </div>
+                
+                <!-- Info Icon -->
+                <div id="toastInfoIcon" class="hidden w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+
+                <!-- Warning Icon -->
+                <div id="toastWarningIcon" class="hidden w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Message Container -->
+            <div class="flex-1 pt-0.5">
+                <p id="toastTitle" class="text-sm font-semibold text-gray-900 mb-1"></p>
+                <p id="toastMessage" class="text-sm text-gray-600"></p>
+            </div>
+            
+            <!-- Close Button -->
+            <button onclick="closeToast()" class="flex-shrink-0 ml-4 text-gray-400 hover:text-gray-600 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div id="toastProgress" class="mt-3 h-1 bg-gray-200 rounded-full overflow-hidden">
+            <div id="toastProgressBar" class="h-full bg-green-600 rounded-full transition-all duration-100 ease-linear" style="width: 100%"></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+let toastTimeout;
+let progressInterval;
+let isToastShowing = false;
+
+function showToast(message, type = 'success', title = '') {
+    const toast = document.getElementById('toast');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastContent = document.getElementById('toastContent');
+    const progressBar = document.getElementById('toastProgressBar');
+    
+    if (!toast || !toastContent) {
+        console.error('Toast elements not found');
+        return;
+    }
+    
+    // Jika toast sedang showing, tutup dulu baru buka yang baru
+    if (isToastShowing) {
+        closeToast();
+        setTimeout(() => showToast(message, type, title), 350);
+        return;
+    }
+    
+    isToastShowing = true;
+    
+    // Clear existing timeouts first
+    if (toastTimeout) clearTimeout(toastTimeout);
+    if (progressInterval) clearInterval(progressInterval);
+    
+    // Hide all icons first
+    document.getElementById('toastSuccessIcon').classList.add('hidden');
+    document.getElementById('toastErrorIcon').classList.add('hidden');
+    document.getElementById('toastInfoIcon').classList.add('hidden');
+    document.getElementById('toastWarningIcon').classList.add('hidden');
+    
+    // Show appropriate icon and set colors
+    progressBar.className = 'h-full rounded-full transition-all duration-100 ease-linear';
+    
+    if (type === 'success') {
+        document.getElementById('toastSuccessIcon').classList.remove('hidden');
+        progressBar.classList.add('bg-green-600');
+        toastTitle.textContent = title || 'Success!';
+    } else if (type === 'error') {
+        document.getElementById('toastErrorIcon').classList.remove('hidden');
+        progressBar.classList.add('bg-red-600');
+        toastTitle.textContent = title || 'Error!';
+    } else if (type === 'warning') {
+        document.getElementById('toastWarningIcon').classList.remove('hidden');
+        progressBar.classList.add('bg-yellow-600');
+        toastTitle.textContent = title || 'Warning!';
+    } else {
+        document.getElementById('toastInfoIcon').classList.remove('hidden');
+        progressBar.classList.add('bg-blue-600');
+        toastTitle.textContent = title || 'Info';
+    }
+    
+    toastMessage.textContent = message;
+    
+    // Reset ke posisi awal (penting!)
+    toastContent.classList.remove('translate-y-0', 'opacity-100');
+    toastContent.classList.add('translate-y-8', 'opacity-0');
+    
+    // Show toast
+    toast.classList.remove('hidden');
+    
+    // Force reflow
+    void toastContent.offsetWidth;
+    
+    // Animate in
+    setTimeout(() => {
+        toastContent.classList.remove('translate-y-8', 'opacity-0');
+        toastContent.classList.add('translate-y-0', 'opacity-100');
+    }, 10);
+    
+    // Progress bar animation
+    progressBar.style.width = '100%';
+    let progress = 100;
+    const duration = 5000;
+    const steps = 50;
+    const decrement = 100 / steps;
+    const intervalTime = duration / steps;
+    
+    progressInterval = setInterval(() => {
+        progress -= decrement;
+        if (progress <= 0) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+        } else {
+            progressBar.style.width = progress + '%';
+        }
+    }, intervalTime);
+    
+    // Auto close after 5 seconds
+    toastTimeout = setTimeout(() => {
+        closeToast();
+    }, duration);
+}
+
+function closeToast() {
+    const toast = document.getElementById('toast');
+    const toastContent = document.getElementById('toastContent');
+    
+    if (!toast || !toastContent) return;
+    
+    // Clear timeouts
+    if (toastTimeout) {
+        clearTimeout(toastTimeout);
+        toastTimeout = null;
+    }
+    if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+    }
+    
+    // Animate out
+    toastContent.classList.remove('translate-y-0', 'opacity-100');
+    toastContent.classList.add('translate-y-8', 'opacity-0');
+    
+    setTimeout(() => {
+        toast.classList.add('hidden');
+        // Reset flag setelah benar-benar hidden
+        isToastShowing = false;
+        
+        // Reset posisi untuk animasi berikutnya (PENTING!)
+        toastContent.classList.remove('translate-y-8', 'opacity-0');
+        toastContent.classList.add('translate-y-8', 'opacity-0');
+    }, 300);
+}
+
+// Handle Django messages
+document.addEventListener('DOMContentLoaded', function() {
+    {% if messages %}
+        {% for message in messages %}
+            let messageType = '{{ message.tags }}';
+            if (messageType.includes('success')) {
+                messageType = 'success';
+            } else if (messageType.includes('error') || messageType.includes('danger')) {
+                messageType = 'error';
+            } else if (messageType.includes('warning')) {
+                messageType = 'warning';
+            } else {
+                messageType = 'info';
+            }
+            
+            setTimeout(() => {
+                showToast('{{ message|escapejs }}', messageType);
+            }, {{ forloop.counter0 }} * 300);
+        {% endfor %}
+    {% endif %}
+});
+</script>
