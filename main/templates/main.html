@@ -14,14 +14,13 @@
 <div class="bg-gray-50 w-full pt-16 min-h-screen">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl p-8 mb-8 text-white relative overflow-hidden">
-        <div class="absolute top-0 right-0 opacity-10 text-9xl">⚽</div>
+    <!-- Hero Section - Minimalist -->
+    <div class="bg-gradient-to-r from-green-600 to-green-500 rounded-xl p-8 mb-8 text-white relative overflow-hidden">
         <div class="relative z-10">
-            <h1 class="text-4xl font-bold mb-2">Welcome to KickOff!</h1>
-            <p class="text-green-100 text-lg mb-4">Discover the best football products from top brands</p>
+            <h1 class="text-3xl font-bold mb-2">Welcome to KickOff</h1>
+            <p class="text-green-100 text-base mb-4">Premium football equipment and apparel</p>
             {% if user.is_authenticated %}
-            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 inline-block">
+            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 inline-block border border-white/10">
                 <p class="text-sm">Hello, <strong>{{ name|default:user.username }}</strong></p>
                 <p class="text-xs text-green-100">{{ npm|default:"Student" }} - {{ class|default:"Class" }}</p>
                 <p class="text-xs text-green-100 mt-1">Last login: {{ last_login }}</p>
@@ -30,45 +29,48 @@
         </div>
     </div>
 
-    <!-- Filter Section with Refresh & Add Product -->
+    <!-- Filter Section - Cleaned Up -->
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-8">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
-            <div class="flex flex-wrap gap-3">
-                <!-- Ownership Filter -->
-                <button onclick="filterProducts('all')" id="filter-all" class="filter-btn bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors hover:bg-green-700">
+        <!-- Ownership Filter -->
+        <div class="mb-4 pb-4 border-b border-gray-200">
+            <div class="flex items-center gap-3">
+                <button onclick="filterProducts('all')" id="filter-all" class="filter-btn bg-green-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-green-700">
                     All Products
                 </button>
-                <button onclick="filterProducts('my')" id="filter-my" class="filter-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-green-600 hover:text-white">
+                <button onclick="filterProducts('my')" id="filter-my" class="filter-btn bg-white text-gray-700 border border-gray-300 px-5 py-2.5 rounded-lg text-sm font-medium transition-all hover:border-green-600 hover:text-green-600">
                     My Products
                 </button>
-
-                <div class="border-l border-gray-300 mx-2"></div>
-
-                <!-- Category Filter -->
-                <button onclick="filterByCategory('')" id="cat-all" class="category-btn bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors hover:bg-green-700">
-                    All Categories
-                </button>
-                <button onclick="filterByCategory('shoes')" id="cat-shoes" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-green-600 hover:text-white">
-                    👟 Shoes
-                </button>
-                <button onclick="filterByCategory('clothing')" id="cat-clothing" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-green-600 hover:text-white">
-                    👕 Clothing
-                </button>
-                <button onclick="filterByCategory('gear')" id="cat-gear" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-green-600 hover:text-white">
-                    ⚽ Gear
-                </button>
-                <button onclick="filterByCategory('accessories')" id="cat-accessories" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-green-600 hover:text-white">
-                    🎒 Accessories
-                </button>
-                <button onclick="filterByCategory('lifestyle')" id="cat-lifestyle" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-green-600 hover:text-white">
-                    🧢 Lifestyle
-                </button>
-                <button onclick="refreshProducts()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                    🔄 Refresh
-                </button>
             </div>
+        </div>
 
-
+        <!-- Category Filter -->
+        <div class="mb-4">
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="filterByCategory('')" id="cat-all" class="category-btn bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all hover:bg-green-700">
+                    All
+                </button>
+                <button onclick="filterByCategory('shoes')" id="cat-shoes" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:border-green-600 hover:text-green-600">
+                    Shoes
+                </button>
+                <button onclick="filterByCategory('clothing')" id="cat-clothing" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:border-green-600 hover:text-green-600">
+                    Clothing
+                </button>
+                <button onclick="filterByCategory('gear')" id="cat-gear" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:border-green-600 hover:text-green-600">
+                    Gear
+                </button>
+                <button onclick="filterByCategory('accessories')" id="cat-accessories" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:border-green-600 hover:text-green-600">
+                    Accessories
+                </button>
+                <button onclick="filterByCategory('lifestyle')" id="cat-lifestyle" class="category-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:border-green-600 hover:text-green-600">
+                    Lifestyle
+                </button>
+                
+                <div class="ml-auto">
+                    <button onclick="refreshProducts()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all border border-gray-300">
+                        Refresh
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Results Count -->
@@ -92,7 +94,7 @@
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Failed to Load Products</h3>
         <p class="text-gray-500 mb-6" id="errorMessage">Something went wrong. Please try again.</p>
-        <button onclick="refreshProducts()" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+        <button onclick="refreshProducts()" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
             Try Again
         </button>
     </div>
@@ -112,8 +114,8 @@
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">No Products Found</h3>
         <p class="text-gray-500 mb-6">No products available in this filter.</p>
-        <button onclick="showModal()" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
-            ➕ Create Your First Product
+        <button onclick="showModal()" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
+            Create Your First Product
         </button>
     </div>
 </div>
@@ -140,7 +142,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// Delete Modal Functions - MUST BE BEFORE loadProducts()
+// Delete Modal Functions
 function showDeleteModal(productId, productName, productBrand) {
     deleteProductId = productId;
     
@@ -152,7 +154,6 @@ function showDeleteModal(productId, productName, productBrand) {
         return;
     }
     
-    // Set product info
     document.getElementById('deleteProductName').textContent = productName;
     document.getElementById('deleteProductBrand').textContent = `Brand: ${productBrand}`;
     
@@ -196,7 +197,7 @@ async function confirmDelete() {
         const data = await response.json();
         
         if (data.success) {
-            showToast(data.message, 'success', 'Deleted!'); // ← PINDAH KE SINI
+            showToast(data.message, 'success', 'Deleted!');
             hideDeleteModal();
             loadProducts();
         } else {
@@ -219,34 +220,38 @@ function getStars(rating) {
     return '★☆☆☆☆';
 }
 
-// Create product card HTML
+// Create product card HTML - Minimalist
 function createProductCard(product) {
     const imageUrl = product.thumbnail || '';
     const imageHtml = imageUrl ? 
         `<img src="${imageUrl}" alt="${product.name}" class="w-full h-full object-cover">` :
-        `<div class="w-full h-full flex items-center justify-center text-gray-300 text-6xl bg-gray-100">⚽</div>`;
+        `<div class="w-full h-full flex items-center justify-center text-gray-400 text-4xl bg-gray-100">
+            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        </div>`;
 
     const sizesHtml = product.sizes_list && product.sizes_list.length > 0 ?
         `<div class="mb-4">
-            <p class="text-xs text-gray-500 mb-1">Available Sizes:</p>
-            <div class="flex flex-wrap gap-1">
-                ${product.sizes_list.map(size => `<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded border border-gray-200">${size}</span>`).join('')}
+            <p class="text-xs text-gray-500 mb-2 font-medium">Available Sizes</p>
+            <div class="flex flex-wrap gap-1.5">
+                ${product.sizes_list.map(size => `<span class="px-2.5 py-1 bg-gray-50 text-gray-700 text-xs rounded border border-gray-200">${size}</span>`).join('')}
             </div>
         </div>` : '';
 
     const discountBadge = product.discount > 0 ?
         `<div class="absolute top-3 left-3">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-600 text-white shadow-lg">-${product.discount}%</span>
+            <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-bold bg-red-600 text-white">${product.discount}% OFF</span>
         </div>` : '';
 
     const featuredBadge = product.is_featured ?
         `<div class="absolute top-3 right-3">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-400 text-gray-900 shadow-lg">⭐ FEATURED</span>
+            <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-bold bg-amber-400 text-gray-900">FEATURED</span>
         </div>` : '';
 
     const stockHtml = product.is_in_stock ?
-        `<span class="text-xs font-medium text-white">✓ In Stock (${product.stock})</span>` :
-        `<span class="text-xs font-bold text-red-400">✗ Out of Stock</span>`;
+        `<span class="text-xs font-medium text-white">In Stock (${product.stock})</span>` :
+        `<span class="text-xs font-bold text-red-400">Out of Stock</span>`;
 
     const priceHtml = product.discount > 0 ?
         `<div class="flex items-baseline space-x-2">
@@ -257,41 +262,48 @@ function createProductCard(product) {
 
     const ratingHtml = product.rating > 0 ? `
         <div class="flex items-center mb-3">
-            <span class="text-yellow-400 text-sm">${getStars(product.rating)}</span>
+            <span class="text-amber-400 text-sm">${getStars(product.rating)}</span>
             <span class="text-sm font-semibold text-gray-700 ml-2">${product.rating}</span>
         </div>` : '';
 
-    // Escape quotes in product name and brand for onclick
     const safeName = product.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
     const safeBrand = product.brand.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
     const actionButtons = product.is_owner ?
         `<div class="flex items-center gap-2 pt-4 border-t border-gray-100">
-            <a href="/product/${product.id}/" class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white font-medium text-sm py-2.5 px-4 rounded-lg transition-colors">View Details</a>
-            <button onclick="showModal('${product.id}')" class="p-2.5 text-gray-600 hover:text-blue-600 border border-gray-300 hover:border-blue-600 rounded-lg transition-colors" title="Edit">✏️</button>
-            <button onclick="showDeleteModal('${product.id}', '${safeName}', '${safeBrand}')" class="p-2.5 text-gray-600 hover:text-red-600 border border-gray-300 hover:border-red-600 rounded-lg transition-colors" title="Delete">🗑️</button>
+            <a href="/product/${product.id}/" class="flex-1 text-center bg-green-600 hover:bg-green-700 text-white font-medium text-sm py-2.5 px-4 rounded-lg transition-all">View Details</a>
+            <button onclick="showModal('${product.id}')" class="p-2.5 text-gray-600 hover:text-green-600 border border-gray-300 hover:border-green-600 rounded-lg transition-all" title="Edit">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+            </button>
+            <button onclick="showDeleteModal('${product.id}', '${safeName}', '${safeBrand}')" class="p-2.5 text-gray-600 hover:text-red-600 border border-gray-300 hover:border-red-600 rounded-lg transition-all" title="Delete">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </button>
         </div>` :
         `<div class="pt-4 border-t border-gray-100">
-            <a href="/product/${product.id}/" class="block text-center bg-green-600 hover:bg-green-700 text-white font-medium text-sm py-2.5 px-4 rounded-lg transition-colors">View Details</a>
+            <a href="/product/${product.id}/" class="block text-center bg-green-600 hover:bg-green-700 text-white font-medium text-sm py-2.5 px-4 rounded-lg transition-all">View Details</a>
         </div>`;
 
     return `
-    <article class="bg-white rounded-lg border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden">
-        <div class="aspect-[4/3] relative overflow-hidden">
+    <article class="bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <div class="aspect-[4/3] relative overflow-hidden bg-gray-50">
             ${imageHtml}
             ${discountBadge}
             ${featuredBadge}
-            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
                 ${stockHtml}
             </div>
         </div>
         <div class="p-5">
-            <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${product.brand}</div>
+            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">${product.brand}</div>
             <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 leading-tight">
-                <a href="/product/${product.id}/" class="hover:text-green-600 transition-colors">${product.name}</a>
+                <a href="/product/${product.id}/" class="hover:text-gray-600 transition-colors">${product.name}</a>
             </h3>
             <div class="mb-3">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">${product.category_display}</span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700">${product.category_display}</span>
             </div>
             ${ratingHtml}
             <div class="mb-4">${priceHtml}</div>
@@ -310,7 +322,6 @@ async function loadProducts() {
     const errorState = document.getElementById('errorState');
     const resultCount = document.getElementById('resultCount');
 
-    // Hide all states
     loading.classList.remove('hidden');
     container.classList.add('hidden');
     emptyState.classList.add('hidden');
@@ -325,7 +336,6 @@ async function loadProducts() {
         
         let products = await response.json();
 
-        // Apply filters client-side
         if (currentFilter === 'my') {
             products = products.filter(p => p.user_username === '{{ user.username }}');
         }
@@ -389,13 +399,11 @@ function updateCategoryButtons() {
     }
 }
 
-// Refresh products
 function refreshProducts() {
     loadProducts();
 }
 
-// Submit form via AJAX (Create or Update)
-// Submit form via AJAX (Create or Update)
+// Submit form via AJAX
 const productForm = document.getElementById('productForm');
 if (productForm) {
     productForm.addEventListener('submit', async function(e) {
@@ -429,7 +437,7 @@ if (productForm) {
             const data = await response.json();
 
             if (data.success) {
-                showToast(data.message, 'success', isEditMode ? 'Updated!' : 'Created!'); // ← PINDAH KE SINI
+                showToast(data.message, 'success', isEditMode ? 'Updated!' : 'Created!');
                 hideModal();
                 this.reset();
                 loadProducts();
@@ -445,9 +453,9 @@ if (productForm) {
         }
     });
 }
-// Event listeners for modals
-document.addEventListener('DOMContentLoaded', function() {
 
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
     const loginMessage = sessionStorage.getItem('loginMessage');
     if (loginMessage) {
         setTimeout(() => {
@@ -456,7 +464,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
     
-    // Check for logout message from sessionStorage
     const logoutMessage = sessionStorage.getItem('logoutMessage');
     if (logoutMessage) {
         setTimeout(() => {
@@ -464,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionStorage.removeItem('logoutMessage');
         }, 100);
     }
-    // Close delete modal when clicking outside
+    
     const deleteModal = document.getElementById('deleteModal');
     if (deleteModal) {
         deleteModal.addEventListener('click', function(e) {
@@ -474,7 +481,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Load products on page load
     loadProducts();
 });
 </script>
