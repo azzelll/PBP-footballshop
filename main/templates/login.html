@@ -8,7 +8,7 @@
 {% include 'toast.html' %}
 <div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
-        <!-- Logo/Brand Section -->
+        <!-- Logo Section -->
         <div class="text-center mb-8">
             <div class="inline-block">
                 <h1 class="text-4xl font-bold mb-2">
@@ -188,7 +188,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     }
 });
 
-// Tambahkan di bagian paling bawah script, SETELAH fetch login
+
 document.addEventListener('DOMContentLoaded', function() {
     // Check for logout success message
     const urlParams = new URLSearchParams(window.location.search);
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('You have been logged out successfully.', 'success', 'Logged Out!');
         }, 100);
         
-    }
+    } 
 });
 
 

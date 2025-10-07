@@ -72,7 +72,6 @@ function showToast(message, type = 'success', title = '') {
         return;
     }
     
-    // Jika toast sedang showing, tutup dulu baru buka yang baru
     if (isToastShowing) {
         closeToast();
         setTimeout(() => showToast(message, type, title), 350);
@@ -114,7 +113,7 @@ function showToast(message, type = 'success', title = '') {
     
     toastMessage.textContent = message;
     
-    // Reset ke posisi awal (penting!)
+    // Reset ke posisi awal 
     toastContent.classList.remove('translate-y-0', 'opacity-100');
     toastContent.classList.add('translate-y-8', 'opacity-0');
     
@@ -176,10 +175,8 @@ function closeToast() {
     
     setTimeout(() => {
         toast.classList.add('hidden');
-        // Reset flag setelah benar-benar hidden
         isToastShowing = false;
         
-        // Reset posisi untuk animasi berikutnya (PENTING!)
         toastContent.classList.remove('translate-y-8', 'opacity-0');
         toastContent.classList.add('translate-y-8', 'opacity-0');
     }, 300);

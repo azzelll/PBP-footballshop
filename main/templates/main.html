@@ -66,7 +66,7 @@
                 </button>
                 
                 <div class="ml-auto">
-                    <button onclick="refreshProducts()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all border border-gray-300">
+                    <button onclick="loadProducts()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all border border-gray-300">
                         Refresh
                     </button>
                 </div>
@@ -94,7 +94,7 @@
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Failed to Load Products</h3>
         <p class="text-gray-500 mb-6" id="errorMessage">Something went wrong. Please try again.</p>
-        <button onclick="refreshProducts()" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
+        <button onclick="loadProducts()" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
             Try Again
         </button>
     </div>
@@ -220,7 +220,7 @@ function getStars(rating) {
     return '★☆☆☆☆';
 }
 
-// Create product card HTML - Minimalist
+// Create product card HTML
 function createProductCard(product) {
     const imageUrl = product.thumbnail || '';
     const imageHtml = imageUrl ? 
@@ -399,11 +399,9 @@ function updateCategoryButtons() {
     }
 }
 
-function refreshProducts() {
-    loadProducts();
-}
 
 // Submit form via AJAX
+
 const productForm = document.getElementById('productForm');
 if (productForm) {
     productForm.addEventListener('submit', async function(e) {

@@ -164,8 +164,6 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
-# ==================== AJAX ENDPOINTS ====================
-
 @csrf_exempt
 @require_POST
 def create_product_ajax(request):
