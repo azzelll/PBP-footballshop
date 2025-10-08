@@ -13,9 +13,9 @@
                     Home
                 </a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'main:create_product' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                <button onclick="showModal()" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
                     Create Product
-                </a>
+                </button>
                 {% endif %}
             </div>
             
@@ -24,7 +24,7 @@
                 {% if user.is_authenticated %}
                     <div class="text-right">
                         <div class="text-sm font-medium text-gray-900">{{ user.username }}</div>
-                        <div class="text-xs text-gray-500">{{ 2406495615 }} - {{ "PBP C" }}</div>
+                        <div class="text-xs text-gray-500">{{ npm|default:"2406495615" }} - {{ class|default:"PBP C" }}</div>
                     </div>
                     <a href="{% url 'main:logout' %}" class="text-red-600 hover:text-red-700 font-medium transition-colors">
                         Logout
@@ -39,12 +39,12 @@
                 {% endif %}
             </div>
 
-            <!-- Mobile Menu - Show all items on small screens -->
+            <!-- Mobile Menu -->
             <div class="md:hidden flex items-center space-x-4">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'main:create_product' %}" class="text-gray-600 hover:text-gray-900 text-sm">
+                    <button onclick="showModal()" class="text-gray-600 hover:text-gray-900 text-sm">
                         Create
-                    </a>
+                    </button>
                     <a href="{% url 'main:logout' %}" class="text-red-600 hover:text-red-700 text-sm font-medium">
                         Logout
                     </a>

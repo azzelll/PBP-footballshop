@@ -5,9 +5,10 @@
 {% endblock meta %}
 
 {% block content %}
+{% include 'toast.html' %}
 <div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
-        <!-- Logo/Brand Section -->
+        <!-- Logo Section -->
         <div class="text-center mb-8">
             <div class="inline-block">
                 <h1 class="text-4xl font-bold mb-2">
@@ -28,44 +29,18 @@
 
             <!-- Card Body -->
             <div class="p-8">
-                <!-- Error Messages -->
-                {% if form.non_field_errors %}
-                <div class="mb-6 bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4">
-                    {% for error in form.non_field_errors %}
+                <!-- Error Container -->
+                <div id="loginError" class="hidden mb-6 bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4">
                     <div class="flex items-start">
                         <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                         </svg>
-                        <span class="text-red-800 text-sm">{{ error }}</span>
+                        <span id="loginErrorText" class="text-red-800 text-sm"></span>
                     </div>
-                    {% endfor %}
                 </div>
-                {% endif %}
-
-                {% if form.errors %}
-                <div class="mb-6 space-y-2">
-                    {% for field, errors in form.errors.items %}
-                    {% if field != '__all__' %}
-                    {% for error in errors %}
-                    <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4">
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <span class="font-medium text-red-800 text-sm">{{ field|title }}:</span>
-                                <span class="text-red-700 text-sm"> {{ error }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% endif %}
-                    {% endfor %}
-                </div>
-                {% endif %}
 
                 <!-- Login Form -->
-                <form method="POST" action="" class="space-y-6">
+                <form id="loginForm" class="space-y-6">
                     {% csrf_token %}
                     
                     <!-- Username Field -->
@@ -113,26 +88,11 @@
                     <!-- Submit Button -->
                     <button 
                         type="submit" 
+                        id="loginButton"
                         class="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                         Sign In
                     </button>
                 </form>
-
-                <!-- Success Messages -->
-                {% if messages %}
-                <div class="mt-6 space-y-2">
-                    {% for message in messages %}
-                    <div class="{% if message.tags == 'success' %}bg-green-50 border-green-500{% elif message.tags == 'error' %}bg-red-50 border-red-500{% else %}bg-blue-50 border-blue-500{% endif %} border-l-4 rounded-r-lg p-4">
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 {% if message.tags == 'success' %}text-green-500{% elif message.tags == 'error' %}text-red-500{% else %}text-blue-500{% endif %} mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="{% if message.tags == 'success' %}text-green-800{% elif message.tags == 'error' %}text-red-800{% else %}text-blue-800{% endif %} text-sm">{{ message }}</span>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
 
                 <!-- Divider -->
                 <div class="relative my-6">
@@ -162,4 +122,84 @@
         </div>
     </div>
 </div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const errorContainer = document.getElementById('loginError');
+    const errorText = document.getElementById('loginErrorText');
+    const button = document.getElementById('loginButton');
+    
+    // Hide previous errors
+    errorContainer.classList.add('hidden');
+    
+    // Disable button
+    button.disabled = true;
+    button.textContent = 'Signing in...';
+    
+    const formData = new FormData(this);
+    const csrftoken = getCookie('csrftoken');
+    
+    try {
+        const response = await fetch('{% url "main:login_ajax" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+            },
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Store message in sessionStorage for toast
+            sessionStorage.setItem('loginMessage', data.message);
+            // Redirect to main page
+            window.location.href = '{% url "main:show_main" %}';
+        } else {
+            // Show error
+            errorText.textContent = data.error;
+            errorContainer.classList.remove('hidden');
+            button.disabled = false;
+            button.textContent = 'Sign In';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        errorText.textContent = 'An error occurred. Please try again.';
+        errorContainer.classList.remove('hidden');
+        button.disabled = false;
+        button.textContent = 'Sign In';
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Check for logout success message
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('logout') === 'success') {
+        setTimeout(() => {
+            showToast('You have been logged out successfully.', 'success', 'Logged Out!');
+        }, 100);
+        
+    } 
+});
+
+
+</script>
 {% endblock content %}
