@@ -27,4 +27,5 @@ urlpatterns = [
     path('api/delete-ajax/<uuid:id>/', delete_product_ajax, name='delete_product_ajax'),
     path('api/login/', login_ajax, name='login_ajax'),
     path('api/register/', register_ajax, name='register_ajax'),
+    path('create-flutter/', create_product_flutter, name='create_product_flutter'),
 ]

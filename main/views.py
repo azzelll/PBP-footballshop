@@ -341,3 +341,54 @@ def update_product_ajax(request, id):
         return JsonResponse({'success': False, 'error': 'Product not found'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
+@csrf_exempt
+@require_POST
+def create_product_flutter(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Unauthorized'
+        }, status=401)
+    
+    try:
+        data = json.loads(request.body)
+        
+        name = data.get('name')
+        brand = data.get('brand')
+        description = data.get('description')
+        thumbnail = data.get('thumbnail', '')
+        category = data.get('category', 'shoes')
+        stock = int(data.get('stock', 0))
+        sizes = data.get('sizes', '')
+        discount = float(data.get('discount', 0))
+        price = int(data.get('price', 0))
+        rating = float(data.get('rating', 0))
+        is_featured_str = data.get('is_featured', 'false')
+        is_featured = is_featured_str.lower() == 'true'
+        
+        product = Product.objects.create(
+            user=request.user,
+            name=name,
+            brand=brand,
+            description=description,
+            thumbnail=thumbnail,
+            category=category,
+            stock=stock,
+            sizes=sizes,
+            discount=discount,
+            price=price,
+            rating=rating,
+            is_featured=is_featured,
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Product "{product.name}" created successfully!',
+            'product_id': str(product.id)
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=400)
