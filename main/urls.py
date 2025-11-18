@@ -3,7 +3,7 @@ from main.views import (
     show_main, create_product, show_product, show_xml, show_json, 
     show_json_by_id, show_xml_by_id, register, login_user, logout_user, 
     edit_product, delete_product,create_product_ajax, delete_product_ajax, 
-    update_product_ajax, get_products_json, login_ajax, register_ajax
+    update_product_ajax, get_products_json, login_ajax, register_ajax, create_product_flutter
 )
 
 app_name = 'main'
