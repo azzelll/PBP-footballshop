@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
 
+# ==================== EXISTING VIEWS (Web) ====================
 @login_required(login_url='/login')
 def show_main(request):
     filter_value = request.GET.get("filter", "all")
@@ -22,17 +23,14 @@ def show_main(request):
     else:
         filter_type = "all"
         
-    # Start with all products or user's products
     if filter_type == "all":
         product_list = Product.objects.all()
     else:
         product_list = Product.objects.filter(user=request.user)
 
-    # Apply category filter if specified
     if category:
         product_list = product_list.filter(category=category)
 
-    # Order by: featured first, then by latest
     product_list = product_list.order_by('-is_featured', '-id')
 
     context = {
@@ -96,11 +94,7 @@ def delete_product(request, id):
 @login_required(login_url='/login') 
 def show_product(request, id):
     product = get_object_or_404(Product, pk=id)
-
-    context = {
-        'product': product
-    }
-
+    context = {'product': product}
     return render(request, "product_detail.html", context)
 
 def show_xml(request):
@@ -318,7 +312,6 @@ def update_product_ajax(request, id):
         if product.user != request.user:
             return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
         
-        # Update product fields
         product.name = request.POST.get('name', product.name)
         product.brand = request.POST.get('brand', product.brand)
         product.description = request.POST.get('description', product.description)
@@ -342,53 +335,188 @@ def update_product_ajax(request, id):
         return JsonResponse({'success': False, 'error': 'Product not found'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    
 
+# ==================== FLUTTER-SPECIFIC ENDPOINTS ====================
+
+@csrf_exempt
 def create_product_flutter(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Unauthorized'
-        }, status=401)
+    """
+    Endpoint khusus untuk Flutter
+    Menerima JSON body dan mengembalikan response dengan format konsisten
+    """
+    if request.method == 'POST':
+        # Check authentication - PENTING: request.user di-set oleh pbp_django_auth
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Unauthorized. Please login first.'
+            }, status=401)
+        
+        # Debug logging untuk development
+        print(f"DEBUG - User: {request.user.username}")
+        print(f"DEBUG - Is Authenticated: {request.user.is_authenticated}")
+        
+        try:
+            # Parse JSON body
+            data = json.loads(request.body)
+            
+            # Validate required fields
+            required_fields = ['name', 'brand', 'description', 'price', 'stock', 'sizes']
+            missing_fields = [field for field in required_fields if not data.get(field)]
+            
+            if missing_fields:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Missing required fields: {", ".join(missing_fields)}'
+                }, status=400)
+            
+            # Extract and validate data
+            name = data.get('name', '').strip()
+            brand = data.get('brand', '').strip()
+            description = data.get('description', '').strip()
+            thumbnail = data.get('thumbnail', '').strip()
+            category = data.get('category', 'shoes')
+            
+            # Convert numeric fields with validation
+            try:
+                stock = int(data.get('stock', 0))
+                price = int(data.get('price', 0))
+                discount = float(data.get('discount', 0))
+                rating = float(data.get('rating', 0))
+            except (ValueError, TypeError) as e:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'Invalid numeric value: {str(e)}'
+                }, status=400)
+            
+            # Validate numeric ranges
+            if price <= 0:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Price must be greater than 0'
+                }, status=400)
+            
+            if stock < 0:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Stock cannot be negative'
+                }, status=400)
+            
+            if discount < 0 or discount > 100:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Discount must be between 0 and 100'
+                }, status=400)
+            
+            if rating < 0 or rating > 5:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Rating must be between 0 and 5'
+                }, status=400)
+            
+            sizes = data.get('sizes', '').strip()
+            
+            # Parse is_featured with multiple format support
+            is_featured_value = data.get('is_featured', False)
+            if isinstance(is_featured_value, str):
+                is_featured = is_featured_value.lower() in ['true', '1', 'yes']
+            else:
+                is_featured = bool(is_featured_value)
+            
+            # Create product
+            product = Product.objects.create(
+                user=request.user,
+                name=name,
+                brand=brand,
+                description=description,
+                thumbnail=thumbnail,
+                category=category,
+                stock=stock,
+                sizes=sizes,
+                discount=discount,
+                price=price,
+                rating=rating,
+                is_featured=is_featured,
+            )
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': f'Product "{product.name}" created successfully!',
+                'data': {
+                    'product_id': str(product.id),
+                    'name': product.name,
+                    'brand': product.brand,
+                    'price': product.price,
+                    'stock': product.stock
+                }
+            }, status=201)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid JSON format'
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Server error: {str(e)}'
+            }, status=500)
     
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Only POST method is allowed'
+    }, status=405)
+
+
+@csrf_exempt  
+def get_products_flutter(request):
+    """
+    Endpoint khusus untuk Flutter - mengembalikan list produk
+    Support filter by user jika ada parameter user=me
+    """
     try:
-        data = json.loads(request.body)
+        # Check if filter by user
+        filter_user = request.GET.get('user', None)
         
-        name = data.get('name')
-        brand = data.get('brand')
-        description = data.get('description')
-        thumbnail = data.get('thumbnail', '')
-        category = data.get('category', 'shoes')
-        stock = int(data.get('stock', 0))
-        sizes = data.get('sizes', '')
-        discount = float(data.get('discount', 0))
-        price = int(data.get('price', 0))
-        rating = float(data.get('rating', 0))
-        is_featured_str = data.get('is_featured', 'false')
-        is_featured = is_featured_str.lower() == 'true'
+        if filter_user == 'me':
+            if not request.user.is_authenticated:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Unauthorized'
+                }, status=401)
+            products = Product.objects.filter(user=request.user)
+        else:
+            products = Product.objects.all()
         
-        product = Product.objects.create(
-            user=request.user,
-            name=name,
-            brand=brand,
-            description=description,
-            thumbnail=thumbnail,
-            category=category,
-            stock=stock,
-            sizes=sizes,
-            discount=discount,
-            price=price,
-            rating=rating,
-            is_featured=is_featured,
-        )
+        # Order products
+        products = products.order_by('-is_featured', '-created_at')
         
-        return JsonResponse({
-            'status': 'success',
-            'message': f'Product "{product.name}" created successfully!',
-            'product_id': str(product.id)
-        })
+        # Serialize data
+        data = []
+        for product in products:
+            data.append({
+                'model': 'main.product',
+                'pk': str(product.id),
+                'fields': {
+                    'user': product.user.id if product.user else None,
+                    'name': product.name,
+                    'brand': product.brand,
+                    'category': product.category,
+                    'description': product.description,
+                    'price': product.price,
+                    'discount': float(product.discount),
+                    'stock': product.stock,
+                    'rating': float(product.rating),
+                    'sizes': product.sizes,
+                    'thumbnail': product.thumbnail if product.thumbnail else '',
+                    'is_featured': product.is_featured,
+                }
+            })
+        
+        return JsonResponse(data, safe=False, status=200)
+        
     except Exception as e:
         return JsonResponse({
             'status': 'error',
             'message': str(e)
-        }, status=400)
+        }, status=500)
