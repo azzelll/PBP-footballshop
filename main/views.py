@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
 
-# ==================== EXISTING VIEWS (Web) ====================
+
 @login_required(login_url='/login')
 def show_main(request):
     filter_value = request.GET.get("filter", "all")
@@ -336,7 +336,6 @@ def update_product_ajax(request, id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
-# ==================== FLUTTER-SPECIFIC ENDPOINTS ====================
 
 @csrf_exempt
 def create_product_flutter(request):
@@ -472,13 +471,17 @@ def create_product_flutter(request):
 def get_products_flutter(request):
     """
     Endpoint khusus untuk Flutter - mengembalikan list produk
-    Support filter by user jika ada parameter user=me
+    Support filter by user (user=me / filter=my) dan category agar selaras dengan web
     """
     try:
-        # Check if filter by user
-        filter_user = request.GET.get('user', None)
-        
-        if filter_user == 'me':
+        filter_user = request.GET.get('user')
+        filter_type = request.GET.get('filter')
+        category = request.GET.get('category')
+
+        # Ikuti logika filter di web: default all, atau my jika diminta
+        filter_by_user = filter_user == 'me' or filter_type == 'my'
+
+        if filter_by_user:
             if not request.user.is_authenticated:
                 return JsonResponse({
                     'status': 'error',
@@ -487,8 +490,10 @@ def get_products_flutter(request):
             products = Product.objects.filter(user=request.user)
         else:
             products = Product.objects.all()
-        
-        # Order products
+
+        if category:
+            products = products.filter(category=category)
+
         products = products.order_by('-is_featured', '-created_at')
         
         # Serialize data
@@ -498,18 +503,25 @@ def get_products_flutter(request):
                 'model': 'main.product',
                 'pk': str(product.id),
                 'fields': {
-                    'user': product.user.id if product.user else None,
+                    'user': product.user.id if product.user else 0,
+                    'username': product.user.username if product.user else 'Anonymous',
                     'name': product.name,
                     'brand': product.brand,
                     'category': product.category,
+                    'category_display': product.get_category_display(),
                     'description': product.description,
                     'price': product.price,
                     'discount': float(product.discount),
+                    'final_price': float(product.final_price),
+                    'formatted_price': product.formatted_price(),
                     'stock': product.stock,
+                    'is_in_stock': product.is_in_stock(),
                     'rating': float(product.rating),
                     'sizes': product.sizes,
+                    'sizes_list': product.get_sizes_list(),
                     'thumbnail': product.thumbnail if product.thumbnail else '',
                     'is_featured': product.is_featured,
+                    'is_owner': request.user.is_authenticated and product.user == request.user,
                 }
             })
         
